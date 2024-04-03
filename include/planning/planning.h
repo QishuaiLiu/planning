@@ -4,16 +4,22 @@
 #include "geometry_msgs/PolygonStamped.h"
 #include "ros/ros.h"
 
+struct Point2d {
+    float x;
+    float y;
+    float theta;
+};
+
 class polygonShow {
    public:
-    polygonShow(ros::NodeHandle &nh, const std::vector<std::vector<float>> &points);
+    polygonShow(ros::NodeHandle &nh, const std::vector<Point2d> &points);
 
-    void createPolygon(geometry_msgs::PolygonStamped &poly_msg);
+    void createObstaclePolygon(geometry_msgs::PolygonStamped &poly_msg);
 
     void run();
 
    private:
-    std::vector<std::vector<float>> polygon_points_;
+    std::vector<Point2d> polygon_points_;
     ros::NodeHandle nh_;
     ros::Publisher poly_points_pub_;
 };

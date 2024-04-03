@@ -1,11 +1,11 @@
 #include "planning/planning.h"
 
-polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<std::vector<float>> &points)
+polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<Point2d> &points)
     : polygon_points_(points), nh_(nh) {
     poly_points_pub_ = nh_.advertise<geometry_msgs::PolygonStamped>("poly_points", 1, false);
 }
 
-void polygonShow::createPolygon(geometry_msgs::PolygonStamped &poly_msg) {
+void polygonShow::createObstaclePolygon(geometry_msgs::PolygonStamped &poly_msg) {
     std_msgs::Header header;
     header.stamp = ros::Time::now();
     header.frame_id = "map";
@@ -16,8 +16,8 @@ void polygonShow::createPolygon(geometry_msgs::PolygonStamped &poly_msg) {
 
     for (int i = 0; i < size_num; ++i) {
         auto &point = polygon_points_[i];
-        poly.points[i].x = point[0];
-        poly.points[i].y = point[1];
+        poly.points[i].x = point.x;
+        poly.points[i].y = point.y;
         poly.points[i].z = 0;
     }
     poly_msg.polygon = poly;
@@ -27,7 +27,7 @@ void polygonShow::run() {
     geometry_msgs::PolygonStamped poly_msg;
     ros::Rate r(10);
 
-    createPolygon(poly_msg);
+    createObstaclePolygon(poly_msg);
 
     int count = 0;
     while (ros::ok()) {
