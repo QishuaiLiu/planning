@@ -39,8 +39,8 @@ class Node2d {
     void SetCost(const double cost) { cost_ = cost; }
 
     void SetPreNode(std::shared_ptr<Node2d> pre_node) { pre_node_ = pre_node; }
-    double GetGridX() const { return grid_x_; }
-    double GetGridY() const { return grid_y_; }
+    int GetGridX() const { return grid_x_; }
+    int GetGridY() const { return grid_y_; }
     double GetPathCost() const { return path_cost_; }
     double GetHeuristic() const { return heuristic_; }
     double GetCost() const { return cost_; }
