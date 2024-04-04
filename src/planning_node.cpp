@@ -4,21 +4,33 @@
 
 #include <iostream>
 
-std::vector<Point2d> createObstacle() {
-    std::vector<Point2d> points;
-    std::vector<float> center;
-    center.push_back(10);
-    center.push_back(10);
-    std::vector<float> dx = {2, 10, 10, 2};
-    std::vector<float> dy = {2, 2, -2, -2};
-    for (int i = 0; i < 4; ++i) {
-        Point2d point;
-        point.x = center.front() + dx[i];
-        point.y = center.back() + dy[i];
-        point.theta = 0;
-        points.push_back(point);
+std::vector<obstacle::BoundingBox> createObstacle() {
+    std::vector<obstacle::BoundingBox> bound_boxs;
+    std::vector<obstacle::Point2d> centers;
+    std::vector<float> length = {7, 10};
+    std::vector<float> width = {4, 5};
+    const int size = length.size();
+    bound_boxs.resize(size);
+    centers.resize(size);
+
+    for (int i = 0; i < size; ++i) {
+        centers[i].x = 10 + i * 15;
+        centers[i].y = 8 + i * 15;
+        centers[i].theta = 0 + i * M_PIf / 2;
+        bound_boxs[i].center = centers[i];
+        bound_boxs[i].length = length[i];
+        bound_boxs[i].width = width[i];
     }
-    return points;
+    return bound_boxs;
+}
+
+obstacle::BoundingBox createMapBound() {
+    obstacle::BoundingBox map;
+    obstacle::Point2d center;
+    center.x = 15, center.y = 15, center.theta = 0;
+    map.center = center;
+    map.length = 30, map.width = 30;
+    return map;
 }
 
 int main(int argc, char **argv) {
@@ -26,9 +38,12 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning_test");
     ros::NodeHandle nh;
 
-    std::vector<Point2d> points = createObstacle();
+    std::vector<obstacle::BoundingBox> bound_boxs = createObstacle();
+    const obstacle::BoundingBox map_boundary = createMapBound();
 
-    polygonShow poly_show(nh, points);
+    polygonShow poly_show(nh, bound_boxs);
+    poly_show.setMapBoundary(map_boundary);
+
     poly_show.run();
 
     return 0;

@@ -2,24 +2,24 @@
 #pragma once
 #include <vector>
 #include "geometry_msgs/PolygonStamped.h"
+#include "jsk_recognition_msgs/BoundingBoxArray.h"
+#include "planning/common_def.h"
 #include "ros/ros.h"
-
-struct Point2d {
-    float x;
-    float y;
-    float theta;
-};
 
 class polygonShow {
    public:
-    polygonShow(ros::NodeHandle &nh, const std::vector<Point2d> &points);
+    polygonShow(ros::NodeHandle &nh, const std::vector<obstacle::BoundingBox> &points);
+    void setMapBoundary(const obstacle::BoundingBox &map_boundary);
+    void createObstaclePolygon(jsk_recognition_msgs::BoundingBoxArray &bound_boxes_msgs);
 
-    void createObstaclePolygon(geometry_msgs::PolygonStamped &poly_msg);
+    void createMapBoundary(jsk_recognition_msgs::BoundingBox &map_msgs);
 
     void run();
 
    private:
-    std::vector<Point2d> polygon_points_;
+    std::vector<obstacle::BoundingBox> polygon_points_;
+    obstacle::BoundingBox map_boundary_;
     ros::NodeHandle nh_;
     ros::Publisher poly_points_pub_;
+    ros::Publisher map_boundary_pub_;
 };
