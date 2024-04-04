@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
   jsk_recognition_msgs
 )
 
+find_package(Eigen3 REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -120,6 +122,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 ## Declare a C++ library
@@ -127,6 +130,9 @@ include_directories(
 #   src/${PROJECT_NAME}/planning.cpp
 # )
 
+file(GLOB MATH_SRC src/math/*.cpp)
+
+message(STATUS MATH_SRC)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -135,7 +141,11 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- add_executable(${PROJECT_NAME}_node src/planning_node.cpp src/planning.cpp)
+ add_executable(${PROJECT_NAME}_node 
+                src/planning_node.cpp 
+                src/planning.cpp
+                ${MATH_SRC}
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

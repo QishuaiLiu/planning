@@ -18,6 +18,9 @@ class polygonShow {
 
     void showStartEndPose(jsk_recognition_msgs::BoundingBoxArray &start_end_pose);
 
+    void checkBoundBox(geometry_msgs::PolygonStamped &check_points,
+                       const jsk_recognition_msgs::BoundingBoxArray &bound_boxes_msgs);
+
     void run();
 
    private:
@@ -28,4 +31,5 @@ class polygonShow {
     ros::Publisher poly_points_pub_;
     ros::Publisher map_boundary_pub_;
     ros::Publisher start_and_end_pub_;
+    ros::Publisher check_pub_;
 };
