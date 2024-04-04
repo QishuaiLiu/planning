@@ -14,12 +14,18 @@ class polygonShow {
 
     void createMapBoundary(jsk_recognition_msgs::BoundingBox &map_msgs);
 
+    void setStartAndEndPose(const std::vector<obstacle::BoundingBox> &start_end_pose);
+
+    void showStartEndPose(jsk_recognition_msgs::BoundingBoxArray &start_end_pose);
+
     void run();
 
    private:
     std::vector<obstacle::BoundingBox> polygon_points_;
+    std::vector<obstacle::BoundingBox> start_and_end_;
     obstacle::BoundingBox map_boundary_;
     ros::NodeHandle nh_;
     ros::Publisher poly_points_pub_;
     ros::Publisher map_boundary_pub_;
+    ros::Publisher start_and_end_pub_;
 };

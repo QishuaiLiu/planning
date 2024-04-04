@@ -5,10 +5,49 @@ polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<obstacle::Boundi
     poly_points_pub_ =
         nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("poly_points", 1, false);
     map_boundary_pub_ = nh_.advertise<jsk_recognition_msgs::BoundingBox>("map_boundary", 1, false);
+    start_and_end_pub_ =
+        nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("start_and_end", 1, false);
 }
 
 void polygonShow::setMapBoundary(const obstacle::BoundingBox &map_boundary) {
     map_boundary_ = map_boundary;
+}
+
+void polygonShow::setStartAndEndPose(const std::vector<obstacle::BoundingBox> &start_end_pose) {
+    start_and_end_ = start_end_pose;
+    return;
+}
+
+void polygonShow::showStartEndPose(jsk_recognition_msgs::BoundingBoxArray &start_end_pose) {
+    std_msgs::Header header;
+    header.frame_id = "map";
+    header.stamp = ros::Time::now();
+
+    start_end_pose.header = header;
+    start_end_pose.boxes.resize(2);
+    auto &boxes = start_end_pose.boxes;
+
+    for (int i = 0; i < 2; ++i) {
+        const auto &cur_pose = start_and_end_[i];
+        boxes[i].header = header;
+        boxes[i].pose.position.x = cur_pose.center.x;
+        boxes[i].pose.position.y = cur_pose.center.y;
+        boxes[i].pose.position.z = 0;
+
+        tf2::Quaternion quat;
+        quat.setRPY(0, 0, cur_pose.center.theta);
+        quat = quat.normalize();
+
+        boxes[i].pose.orientation.x = quat.x();
+        boxes[i].pose.orientation.y = quat.y();
+        boxes[i].pose.orientation.z = quat.z();
+        boxes[i].pose.orientation.w = quat.w();
+
+        boxes[i].dimensions.x = cur_pose.length;
+        boxes[i].dimensions.y = cur_pose.width;
+        boxes[i].dimensions.z = 0.3;
+    }
+    return;
 }
 
 void polygonShow::createObstaclePolygon(jsk_recognition_msgs::BoundingBoxArray &bound_box_msgs) {
@@ -68,10 +107,14 @@ void polygonShow::run() {
     createMapBoundary(map_boundary);
     createObstaclePolygon(poly_msg);
 
+    jsk_recognition_msgs::BoundingBoxArray start_end_msg;
+    showStartEndPose(start_end_msg);
+
     int count = 0;
     while (ros::ok()) {
         r.sleep();
         poly_points_pub_.publish(poly_msg);
         map_boundary_pub_.publish(map_boundary);
+        start_and_end_pub_.publish(start_end_msg);
     }
 }

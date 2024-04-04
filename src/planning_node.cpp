@@ -33,16 +33,38 @@ obstacle::BoundingBox createMapBound() {
     return map;
 }
 
+std::vector<obstacle::BoundingBox> createStartAndEndPoint() {
+    std::vector<obstacle::BoundingBox> bound_boxs;
+    std::vector<obstacle::Point2d> centers;
+    std::vector<float> length = {5, 5};
+    std::vector<float> width = {3, 3};
+    const int size = length.size();
+    bound_boxs.resize(size);
+    centers.resize(size);
+    centers.front() = obstacle::Point2d(10, 20, 0);
+    centers.back() = obstacle::Point2d(20, 8, M_PIf / 2);
+
+    for (int i = 0; i < size; ++i) {
+        bound_boxs[i].center = centers[i];
+        bound_boxs[i].length = length[i];
+        bound_boxs[i].width = width[i];
+    }
+    return bound_boxs;
+}
+
 int main(int argc, char **argv) {
-    std::cout << "hello" << std::endl;
     ros::init(argc, argv, "planning_test");
     ros::NodeHandle nh;
 
+    // create obstacles and map boundary
     std::vector<obstacle::BoundingBox> bound_boxs = createObstacle();
     const obstacle::BoundingBox map_boundary = createMapBound();
 
+    auto start_and_end_pos = createStartAndEndPoint();
+
     polygonShow poly_show(nh, bound_boxs);
     poly_show.setMapBoundary(map_boundary);
+    poly_show.setStartAndEndPose(start_and_end_pos);
 
     poly_show.run();
 

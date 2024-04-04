@@ -6,7 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /obstacle1
         - /BoundingBox1
+        - /BoundingBoxArray1
       Splitter Ratio: 0.5
     Tree Height: 1693
   - Class: rviz/Selection
@@ -61,9 +63,9 @@ Visualization Manager:
       Value: true
       alpha: 0.800000011920929
       color: 25; 255; 0
-      coloring: Auto
-      line width: 0.004999999888241291
-      only edge: false
+      coloring: Value
+      line width: 0.10000000149011612
+      only edge: true
       show coords: false
     - Class: jsk_rviz_plugin/BoundingBox
       Enabled: true
@@ -75,6 +77,19 @@ Visualization Manager:
       alpha: 0.10000000149011612
       color: 25; 255; 0
       coloring: Flat color
+      line width: 0.004999999888241291
+      only edge: false
+      show coords: false
+    - Class: jsk_rviz_plugin/BoundingBoxArray
+      Enabled: true
+      Name: BoundingBoxArray
+      Queue Size: 10
+      Topic: /start_and_end
+      Unreliable: false
+      Value: true
+      alpha: 0.800000011920929
+      color: 25; 255; 0
+      coloring: Auto
       line width: 0.004999999888241291
       only edge: false
       show coords: false
