@@ -113,7 +113,12 @@ bool GridSearch::GenerateAStarPath(
                 next_node->SetPreNode(current_node);
                 open_set.emplace(next_node->GetIndex(), next_node);
                 open_pq.emplace(next_node->GetIndex(), next_node->GetCost());
-            }  // else if
+            } else {
+                if (open_set[next_node->GetIndex()]->GetCost() > next_node->GetCost()) {
+                    open_set[next_node->GetIndex()]->SetCost(next_node->GetCost());
+                    open_set[next_node->GetIndex()]->SetPreNode(current_node);
+                }
+            }
         }
     }
 
