@@ -131,6 +131,7 @@ include_directories(
 # )
 
 file(GLOB MATH_SRC src/math/*.cpp)
+file(GLOB HYBRID_ASTAR_SRC src/hybrid_a_star/*.cpp)
 
 message(STATUS MATH_SRC)
 ## Add cmake target dependencies of the library
@@ -145,6 +146,7 @@ message(STATUS MATH_SRC)
                 src/planning_node.cpp 
                 src/planning.cpp
                 ${MATH_SRC}
+                ${HYBRID_ASTAR_SRC}
 )
 
 ## Rename C++ executable without prefix

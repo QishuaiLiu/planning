@@ -2,6 +2,7 @@
 #pragma once
 #include <vector>
 #include "geometry_msgs/PolygonStamped.h"
+#include "hybrid_a_star/grid_search.h"
 #include "jsk_recognition_msgs/BoundingBoxArray.h"
 #include "planning/common_def.h"
 #include "ros/ros.h"
@@ -21,9 +22,12 @@ class polygonShow {
     void checkBoundBox(geometry_msgs::PolygonStamped &check_points,
                        const jsk_recognition_msgs::BoundingBoxArray &bound_boxes_msgs);
 
+    bool generateAstarPath(planning::GridAStarResult &astar_path);
+
     void run();
 
    private:
+    // visualization related
     std::vector<obstacle::BoundingBox> polygon_points_;
     std::vector<obstacle::BoundingBox> start_and_end_;
     obstacle::BoundingBox map_boundary_;
@@ -32,4 +36,7 @@ class polygonShow {
     ros::Publisher map_boundary_pub_;
     ros::Publisher start_and_end_pub_;
     ros::Publisher check_pub_;
+
+    // grid search
+    std::unique_ptr<planning::GridSearch> grid_search_ptr_;
 };

@@ -3,12 +3,17 @@
 
 polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<obstacle::BoundingBox> &points)
     : polygon_points_(points), nh_(nh) {
+    // setting publisher
     poly_points_pub_ =
         nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("poly_points", 1, false);
     map_boundary_pub_ = nh_.advertise<jsk_recognition_msgs::BoundingBox>("map_boundary", 1, false);
     start_and_end_pub_ =
         nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("start_and_end", 1, false);
     check_pub_ = nh_.advertise<geometry_msgs::PolygonStamped>("check_point", 1, false);
+
+    // config planner
+    planning::PlannerOpenSpaceConfig open_space_config;
+    grid_search_ptr_ = std::make_unique<planning::GridSearch>(open_space_config);
 }
 
 void polygonShow::setMapBoundary(const obstacle::BoundingBox &map_boundary) {
@@ -127,6 +132,67 @@ void polygonShow::checkBoundBox(geometry_msgs::PolygonStamped &check_points,
     return;
 }
 
+bool polygonShow::generateAstarPath(planning::GridAStarResult &astar_path) {
+    // create map boundary for grid search
+    std::vector<double> xy_bounds;
+    xy_bounds.resize(4);
+    auto &center = map_boundary_.center;
+    const double length = map_boundary_.length;
+    const double width = map_boundary_.width;
+    const double theta = center.theta;
+    std::vector<double> dx = {-length / 2, length / 2};
+    std::vector<double> dy = {-width / 2, width / 2};
+    for (int i = 0; i < 2; ++i) {
+        const double temp_x = dx[i] * std::cos(theta) - dy[i] * std::sin(theta);
+        const double temp_y = dx[i] * std::sin(theta) + dy[i] * std::cos(theta);
+        xy_bounds[i] = temp_x + center.x;
+        xy_bounds[i + 2] = temp_y + center.y;
+    }
+
+    // create obstacle line segment2d
+    std::vector<std::vector<math::LineSegment2d>> obstacles_linesegments_vec;
+    int obstacle_size = polygon_points_.size();
+    obstacles_linesegments_vec.resize(obstacle_size);
+    for (int i = 0; i < obstacle_size; ++i) {
+        std::vector<math::LineSegment2d> obstacle_linesegments;
+        const double length = polygon_points_[i].length;
+        const double width = polygon_points_[i].width;
+        auto &center = polygon_points_[i].center;
+        const double theta = center.theta;
+        std::vector<double> dx = {-length / 2, -length / 2, length / 2, length / 2};
+        std::vector<double> dy = {width / 2, -width / 2, -width / 2, width / 2};
+        for (int j = 0; j < 4; ++j) {
+            const double temp_pre_x = dx[j % 4] * std::cos(theta) - dy[j % 4] * std::sin(theta);
+            const double temp_pre_y = dx[j % 4] * std::sin(theta) + dy[j % 4] * std::cos(theta);
+            math::Vec2d start(center.x + temp_pre_x, center.y + temp_pre_y);
+
+            const double temp_next_x =
+                dx[(j + 1) % 4] * std::cos(theta) - dy[(j + 1) % 4] * std::sin(theta);
+            const double temp_next_y =
+                dx[(j + 1) % 4] * std::sin(theta) + dy[(j + 1) % 4] * std::cos(theta);
+            math::Vec2d end(center.x + temp_next_x, center.y + temp_next_y);
+
+            math::LineSegment2d obstacle_line = math::LineSegment2d(start, end);
+            obstacle_linesegments.push_back(obstacle_line);
+        }
+        obstacles_linesegments_vec[i] = obstacle_linesegments;
+    }
+
+    // prepare the start and end pose
+    auto &start = start_and_end_.front();
+    auto &end = start_and_end_.back();
+    const double sx = start.center.x, sy = start.center.y;
+    const double ex = end.center.x, ey = end.center.y;
+
+    bool plan_result = grid_search_ptr_->GenerateAStarPath(sx, sy, ex, ey, xy_bounds,
+                                                           obstacles_linesegments_vec, &astar_path);
+    std::cout << "plan result is: " << plan_result << std::endl;
+    if (plan_result) {
+        std::cout << "path size: " << astar_path.x.size() << std::endl;
+    }
+    return true;
+}
+
 void polygonShow::createMapBoundary(jsk_recognition_msgs::BoundingBox &map_msgs) {
     map_msgs.header.frame_id = "map";
     map_msgs.header.stamp = ros::Time::now();
@@ -164,6 +230,10 @@ void polygonShow::run() {
 
     geometry_msgs::PolygonStamped check_points;
     checkBoundBox(check_points, poly_msg);
+
+    planning::GridAStarResult astar_path;
+
+    generateAstarPath(astar_path);
 
     int count = 0;
     while (ros::ok()) {

@@ -16,7 +16,7 @@ class Node2d {
     Node2d(const double x, const double y, const double xy_resolution,
            const std::vector<double> &XYbounds) {
         grid_x_ = static_cast<int>(x - XYbounds[0] / xy_resolution);
-        grid_y_ = static_cast<int>(y - XYbounds[1] / xy_resolution);
+        grid_y_ = static_cast<int>(y - XYbounds[2] / xy_resolution);
         index_ = ComputeStringIndex(grid_x_, grid_y_);
     }
 
