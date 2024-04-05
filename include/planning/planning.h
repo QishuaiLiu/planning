@@ -4,6 +4,7 @@
 #include "geometry_msgs/PolygonStamped.h"
 #include "hybrid_a_star/grid_search.h"
 #include "jsk_recognition_msgs/BoundingBoxArray.h"
+#include "nav_msgs/Path.h"
 #include "planning/common_def.h"
 #include "ros/ros.h"
 
@@ -24,6 +25,8 @@ class polygonShow {
 
     bool generateAstarPath(planning::GridAStarResult &astar_path);
 
+    void showAstarPath(const planning::GridAStarResult &astar_path, nav_msgs::Path &pose_msgs);
+
     void run();
 
    private:
@@ -36,6 +39,7 @@ class polygonShow {
     ros::Publisher map_boundary_pub_;
     ros::Publisher start_and_end_pub_;
     ros::Publisher check_pub_;
+    ros::Publisher astar_path_pub_;
 
     // grid search
     std::unique_ptr<planning::GridSearch> grid_search_ptr_;

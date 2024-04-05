@@ -10,6 +10,7 @@ polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<obstacle::Boundi
     start_and_end_pub_ =
         nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("start_and_end", 1, false);
     check_pub_ = nh_.advertise<geometry_msgs::PolygonStamped>("check_point", 1, false);
+    astar_path_pub_ = nh_.advertise<nav_msgs::Path>("astar_path", 1, false);
 
     // config planner
     planning::PlannerOpenSpaceConfig open_space_config;
@@ -192,6 +193,29 @@ bool polygonShow::generateAstarPath(planning::GridAStarResult &astar_path) {
     }
     return true;
 }
+void polygonShow::showAstarPath(const planning::GridAStarResult &astar_path,
+                                nav_msgs::Path &pose_msgs) {
+    int size = astar_path.x.size();
+    std_msgs::Header header;
+    header.frame_id = "map";
+    header.stamp = ros::Time::now();
+    pose_msgs.header = header;
+
+    pose_msgs.poses.resize(size);
+    for (int i = 0; i < size; ++i) {
+        auto &pose = pose_msgs.poses[i];
+        pose.header = header;
+        pose.pose.position.x = astar_path.x[i];
+        pose.pose.position.y = astar_path.y[i];
+        pose.pose.position.z = 0.3;
+
+        pose.pose.orientation.x = 0;
+        pose.pose.orientation.y = 0;
+        pose.pose.orientation.z = 0;
+        pose.pose.orientation.w = 1;
+    }
+    return;
+}
 
 void polygonShow::createMapBoundary(jsk_recognition_msgs::BoundingBox &map_msgs) {
     map_msgs.header.frame_id = "map";
@@ -235,6 +259,9 @@ void polygonShow::run() {
 
     generateAstarPath(astar_path);
 
+    nav_msgs::Path astar_pose;
+    showAstarPath(astar_path, astar_pose);
+
     int count = 0;
     while (ros::ok()) {
         r.sleep();
@@ -242,5 +269,6 @@ void polygonShow::run() {
         map_boundary_pub_.publish(map_boundary);
         start_and_end_pub_.publish(start_end_msg);
         check_pub_.publish(check_points);
+        astar_path_pub_.publish(astar_pose);
     }
 }
