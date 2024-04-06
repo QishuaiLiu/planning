@@ -91,6 +91,7 @@ class GridSearch {
         const double ex, const double ey, const std::vector<double> &XYbounds,
         const std::vector<std::vector<math::LineSegment2d>> &obstacles_linesegments_vec);
     double CheckDpMap(const double sx, const double sy);
+    double CheckDpMap(const std::shared_ptr<Node2d> &node);
 
    private:
     double EuclidDistance(const double x1, const double y1, const double x2, const double y2);

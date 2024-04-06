@@ -108,8 +108,11 @@ bool GridSearch::GenerateAStarPath(
 
             if (open_set.find(next_node->GetIndex()) == open_set.end()) {
                 ++explored_node_num;
-                next_node->SetHeuristic(EuclidDistance(next_node->GetGridX(), next_node->GetGridY(),
-                                                       end_node->GetGridX(), end_node->GetGridY()));
+                // next_node->SetHeuristic(EuclidDistance(next_node->GetGridX(),
+                // next_node->GetGridY(),
+                //                                        end_node->GetGridX(),
+                //                                        end_node->GetGridY()));
+                next_node->SetHeuristic(CheckDpMap(next_node));
                 next_node->SetPreNode(current_node);
                 open_set.emplace(next_node->GetIndex(), next_node);
                 open_pq.emplace(next_node->GetIndex(), next_node->GetCost());
@@ -194,6 +197,13 @@ bool GridSearch::GenerateDpMap(
         }
     }
     return true;
+}
+double GridSearch::CheckDpMap(const std::shared_ptr<Node2d> &node) {
+    if (dp_map_.find(node->GetIndex()) != dp_map_.end()) {
+        return dp_map_[node->GetIndex()]->GetCost() * xy_grid_resolution_;
+    } else {
+        return std::numeric_limits<double>::infinity();
+    }
 }
 
 double GridSearch::CheckDpMap(const double sx, const double sy) {
