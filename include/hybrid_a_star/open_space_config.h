@@ -20,15 +20,19 @@ struct SCurveConfig {
 struct WarmStartConfig {
     double xy_grid_resolution = 0.3;
     double phi_grid_resolution = 0.1;
-    int next_node_num = 10;
-    double step_size = 0.5;
+    int next_node_num = 16;
+    double step_size = 0.1;
     double traj_forward_penalty = 1.0;
     double traj_back_penalty = 1.0;
-    double traj_gear_switch_penalty = 10.0;
-    double traj_steer_penalty = 0.0;
-    double traj_steer_change_penalty = 0.0;
-    double grid_a_star_xy_resolution = 0.5;
-    double node_radius = 0.25;
+    double traj_gear_switch_penalty = 3.0;
+    int max_explored_num = 10000;
+    double traj_steer_penalty = 3.0;
+    double traj_steer_change_penalty = 1.0;
+    double grid_a_star_xy_resolution = 0.25;
+    double node_radius = 0.2;
+    double traj_kappa_contraint_ratio = 0.5;
+    double traj_short_length_penalty = 5.0;
+    double traj_expected_shortest_length = 0.5;
     SCurveConfig s_curve_config;
 };
 
