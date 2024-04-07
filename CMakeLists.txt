@@ -18,6 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED)
 
+set(osqp_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/include")
+file(GLOB osqp_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lib/osqp/*.so")
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -108,8 +111,8 @@ find_package(Eigen3 REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
- LIBRARIES planning
+ INCLUDE_DIRS include 
+ LIBRARIES planning ${osqp_LIBRARIES}
  CATKIN_DEPENDS roscpp rospy std_msgs
  DEPENDS system_lib
 )
@@ -124,6 +127,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
+  ${osqp_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -163,6 +167,7 @@ message(STATUS MATH_SRC)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
+  ${osqp_LIBRARIES}
 )
 
 #############
