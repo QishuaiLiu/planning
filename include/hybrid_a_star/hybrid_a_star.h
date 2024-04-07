@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "common/vehicle_config.h"
 #include "hybrid_a_star/grid_search.h"
 #include "hybrid_a_star/node3d.h"

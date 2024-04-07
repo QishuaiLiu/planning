@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <limits>
 #include "math/Vec2d.h"
 #include "math/aabox2d.h"
 #include "math/line_segment2d.h"
