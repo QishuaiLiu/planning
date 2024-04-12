@@ -34,6 +34,8 @@ struct WarmStartConfig {
     double traj_kappa_contraint_ratio = 0.5;
     double traj_short_length_penalty = 5.0;
     double traj_expected_shortest_length = 0.5;
+    int astar_max_search_time = 18;
+    int desired_explored_num = 10000;
     SCurveConfig s_curve_config;
 };
 
@@ -97,6 +99,7 @@ struct IterativeAnchoringSmootherConfig {
 struct PlannerOpenSpaceConfig {
     RoiConfig roi_config;
     WarmStartConfig warm_start_config;
+    IterativeAnchoringSmootherConfig iterative_anchoring_smoother_config;
     double delta_t = 0.5;
     double near_destination_threshold = 0.05;
     bool enable_linear_interpolation = false;

@@ -15,6 +15,7 @@ polygonShow::polygonShow(ros::NodeHandle &nh, const std::vector<obstacle::Boundi
     // config planner
     planning::PlannerOpenSpaceConfig open_space_config;
     grid_search_ptr_ = std::make_unique<planning::GridSearch>(open_space_config);
+    hybrid_astart_ptr_ = std::make_unique<planning::HybridAStar>(open_space_config);
 }
 
 void polygonShow::setMapBoundary(const obstacle::BoundingBox &map_boundary) {
@@ -191,6 +192,7 @@ bool polygonShow::generateAstarPath(planning::GridAStarResult &astar_path) {
     if (plan_result) {
         std::cout << "path size: " << astar_path.x.size() << std::endl;
     }
+
     return true;
 }
 void polygonShow::showAstarPath(const planning::GridAStarResult &astar_path,

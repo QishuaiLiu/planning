@@ -3,6 +3,7 @@
 #include <vector>
 #include "geometry_msgs/PolygonStamped.h"
 #include "hybrid_a_star/grid_search.h"
+#include "hybrid_a_star/hybrid_a_star.h"
 #include "jsk_recognition_msgs/BoundingBoxArray.h"
 #include "nav_msgs/Path.h"
 #include "planning/common_def.h"
@@ -43,4 +44,5 @@ class polygonShow {
 
     // grid search
     std::unique_ptr<planning::GridSearch> grid_search_ptr_;
+    std::unique_ptr<planning::HybridAStar> hybrid_astart_ptr_;
 };
